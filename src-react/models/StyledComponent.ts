@@ -1,5 +1,4 @@
 import isPropValid from '@emotion/is-prop-valid';
-import React, { createElement, Ref, useDebugValue } from 'react';
 import { SC_VERSION } from '../constants';
 import type {
   AnyComponent,
@@ -20,7 +19,7 @@ import { checkDynamicCreation } from '../utils/checkDynamicCreation';
 import createWarnTooManyClasses from '../utils/createWarnTooManyClasses';
 import determineTheme from '../utils/determineTheme';
 import domElements from '../utils/domElements';
-import { EMPTY_ARRAY, EMPTY_OBJECT } from '../utils/empties';
+import { EMPTY_ARRAY,EMPTY_OBJECT } from '../utils/empties';
 import escape from '../utils/escape';
 import generateComponentId from '../utils/generateComponentId';
 import generateDisplayName from '../utils/generateDisplayName';
@@ -33,7 +32,7 @@ import merge from '../utils/mixinDeep';
 import { setToString } from '../utils/setToString';
 import ComponentStyle from './ComponentStyle';
 import { useStyleSheetContext } from './StyleSheetManager';
-import { DefaultTheme, ThemeContext } from './ThemeProvider';
+import { DefaultTheme } from './ThemeProvider';
 
 const identifiers: { [key: string]: number } = {};
 
@@ -67,7 +66,7 @@ function useInjectedStyle<T extends ExecutionContext>(
     ssc.stylis
   );
 
-  if (process.env.NODE_ENV !== 'production') useDebugValue(className);
+  if (process.env.NODE_ENV !== 'production') console.log(className);
 
   return className;
 }

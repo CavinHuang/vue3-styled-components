@@ -1,3 +1,4 @@
+import { ComponentPropsOptions } from 'vue';
 import {
   Attrs,
   BaseObject,
@@ -67,7 +68,7 @@ export interface Styled<
     PrivateResolvedTarget,
     PrivateResolvedTarget extends KnownTarget
       ? Substitute<
-          Substitute<OuterProps, React.ComponentPropsWithRef<PrivateResolvedTarget>>,
+          Substitute<OuterProps, ComponentPropsOptions<PrivateResolvedTarget>>,
           Props
         >
       : PrivateMergedProps,
@@ -81,7 +82,7 @@ export default function constructWithOptions<
   R extends Runtime,
   Target extends StyledTarget<R>,
   OuterProps extends object = Target extends KnownTarget
-    ? React.ComponentPropsWithRef<Target>
+    ? ComponentPropsOptions<Target>
     : BaseObject,
   OuterStatics extends object = BaseObject,
 >(
@@ -130,7 +131,7 @@ export default function constructWithOptions<
       PrivateResolvedTarget,
       PrivateResolvedTarget extends KnownTarget
         ? Substitute<
-            Substitute<OuterProps, React.ComponentPropsWithRef<PrivateResolvedTarget>>,
+            Substitute<OuterProps, ComponentPropsOptions<PrivateResolvedTarget>>,
             Props
           >
         : PrivateMergedProps,

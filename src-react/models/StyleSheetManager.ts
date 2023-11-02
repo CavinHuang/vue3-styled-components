@@ -1,8 +1,7 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
 import shallowequal from 'shallowequal';
 import type stylis from 'stylis';
 import StyleSheet from '../sheet';
-import { ShouldForwardProp, Stringifier } from '../types';
+import { ShouldForwardProp,Stringifier } from '../types';
 import createStylisInstance from '../utils/stylis';
 
 export const mainSheet: StyleSheet = new StyleSheet();
@@ -101,14 +100,18 @@ export function StyleSheetManager(props: IStyleSheetManager): JSX.Element {
   const stylis = useMemo(
     () =>
       createStylisInstance({
-        options: { namespace: props.namespace, prefix: props.enableVendorPrefixes },
+        options: {
+          namespace: props.namespace,
+          prefix: props.enableVendorPrefixes,
+        },
         plugins,
       }),
     [props.enableVendorPrefixes, props.namespace, plugins]
   );
 
   useEffect(() => {
-    if (!shallowequal(plugins, props.stylisPlugins)) setPlugins(props.stylisPlugins);
+    if (!shallowequal(plugins, props.stylisPlugins))
+      setPlugins(props.stylisPlugins);
   }, [props.stylisPlugins]);
 
   const styleSheetContextValue = useMemo(
@@ -122,7 +125,9 @@ export function StyleSheetManager(props: IStyleSheetManager): JSX.Element {
 
   return (
     <StyleSheetContext.Provider value={styleSheetContextValue}>
-      <StylisContext.Provider value={stylis}>{props.children}</StylisContext.Provider>
+      <StylisContext.Provider value={stylis}>
+        {props.children}
+      </StylisContext.Provider>
     </StyleSheetContext.Provider>
   );
 }

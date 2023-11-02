@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from 'react';
+import { InjectionKey, PropType, computed, defineComponent, inject } from 'vue';
 import styledError from '../utils/error';
 import isFunction from '../utils/isFunction';
 
@@ -32,15 +32,22 @@ type ThemeFn = (outerTheme?: DefaultTheme | undefined) => DefaultTheme;
 type ThemeArgument = DefaultTheme | ThemeFn;
 
 type Props = {
-  children?: React.ReactNode;
   theme: ThemeArgument;
 };
 
-export const ThemeContext = React.createContext<DefaultTheme | undefined>(undefined);
+export const ThemeContextKey = Symbol() as InjectionKey<
+  DefaultTheme | undefined
+>;
 
-export const ThemeConsumer = ThemeContext.Consumer;
+export const themeContextProvider = (them?: ThemeArgument) =>
+  inject(ThemeContextKey, them);
 
-function mergeTheme(theme: ThemeArgument, outerTheme?: DefaultTheme | undefined): DefaultTheme {
+// export const ThemeConsumer = ThemeContext.Consumer;
+
+function mergeTheme(
+  theme?: ThemeArgument,
+  outerTheme?: DefaultTheme | undefined
+): DefaultTheme {
   if (!theme) {
     throw styledError(14);
   }
@@ -51,7 +58,9 @@ function mergeTheme(theme: ThemeArgument, outerTheme?: DefaultTheme | undefined)
 
     if (
       process.env.NODE_ENV !== 'production' &&
-      (mergedTheme === null || Array.isArray(mergedTheme) || typeof mergedTheme !== 'object')
+      (mergedTheme === null ||
+        Array.isArray(mergedTheme) ||
+        typeof mergedTheme !== 'object')
     ) {
       throw styledError(7);
     }
@@ -74,7 +83,7 @@ function mergeTheme(theme: ThemeArgument, outerTheme?: DefaultTheme | undefined)
  * is no `ThemeProvider` ancestor.
  */
 export function useTheme(): DefaultTheme {
-  const theme = useContext(ThemeContext);
+  const theme = inject(ThemeContextKey, undefined);
 
   if (!theme) {
     throw styledError(18);
@@ -86,16 +95,26 @@ export function useTheme(): DefaultTheme {
 /**
  * Provide a theme to an entire react component tree via context
  */
-export default function ThemeProvider(props: Props): JSX.Element | null {
-  const outerTheme = React.useContext(ThemeContext);
-  const themeContext = useMemo(
-    () => mergeTheme(props.theme, outerTheme),
-    [props.theme, outerTheme]
-  );
+const ThemeProvider = defineComponent({
+  name: 'ThemeProvider',
+  props: {
+    theme: {
+      type: Object as PropType<Props>,
+    },
+  },
+  setup(props, { slots }) {
+    const themeContext = computed(() => mergeTheme(props.theme));
 
-  if (!props.children) {
-    return null;
-  }
+    if (!slots.default) {
+      return null;
+    }
 
-  return <ThemeContext.Provider value={themeContext}>{props.children}</ThemeContext.Provider>;
-}
+    themeContextProvider(themeContext.value);
+
+    return () => slots.default?.();
+  },
+});
+
+export default ThemeProvider;
+
+export { ThemeProvider };
