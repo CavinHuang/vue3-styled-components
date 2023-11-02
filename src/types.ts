@@ -1,16 +1,11 @@
 import type * as CSS from 'csstype';
-import React from 'react';
+import { DefineComponent } from 'vue';
 import ComponentStyle from './models/ComponentStyle';
 import { DefaultTheme } from './models/ThemeProvider';
 import createWarnTooManyClasses from './utils/createWarnTooManyClasses';
 import type { SupportedHTMLElements } from './utils/domElements';
 
-export { CSS, DefaultTheme, SupportedHTMLElements };
-
-interface ExoticComponentWithDisplayName<P extends object = {}> extends React.ExoticComponent<P> {
-  defaultProps?: Partial<P> | undefined;
-  displayName?: string | undefined;
-}
+export { CSS,DefaultTheme,SupportedHTMLElements };
 
 /**
  * Use this type to disambiguate between a styled-component instance
@@ -29,9 +24,7 @@ type FastOmit<T extends object, U extends string | number | symbol> = {
 
 export type Runtime = 'web' | 'native';
 
-export type AnyComponent<P extends object = any> =
-  | ExoticComponentWithDisplayName<P>
-  | React.ComponentType<P>;
+export type AnyComponent<P extends object = any> = DefineComponent<P>;
 
 export type KnownTarget = SupportedHTMLElements | AnyComponent;
 
@@ -182,11 +175,11 @@ export type PolymorphicComponentProps<
   ForwardedAsTarget extends StyledTarget<R> | void,
   // props extracted from "as"
   AsTargetProps extends object = AsTarget extends KnownTarget
-    ? React.ComponentPropsWithRef<AsTarget>
+    ? DefineComponent<AsTarget>
     : {},
   // props extracted from "forwardAs"; note that ref is excluded
   ForwardedAsTargetProps extends object = ForwardedAsTarget extends KnownTarget
-    ? React.ComponentPropsWithRef<ForwardedAsTarget>
+    ? DefineComponent<ForwardedAsTarget>
     : {},
 > = NoInfer<
   FastOmit<
@@ -211,7 +204,7 @@ export type PolymorphicComponentProps<
  * any specialized props in the target component.
  */
 export interface PolymorphicComponent<R extends Runtime, BaseProps extends object>
-  extends React.ForwardRefExoticComponent<BaseProps> {
+  extends DefineComponent<BaseProps> {
   <
     AsTarget extends StyledTarget<R> | void = void,
     ForwardedAsTarget extends StyledTarget<R> | void = void,

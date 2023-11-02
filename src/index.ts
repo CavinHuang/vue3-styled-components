@@ -23,6 +23,6 @@ export {
   StyledObject,
   StyledOptions,
   SupportedHTMLElements,
-  WebTarget,
+  WebTarget
 } from './types';
-export { styled as default, styled };
+export { styled as default,styled };
