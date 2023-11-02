@@ -1,1 +1,4 @@
+demoEditor
 node_modules
+**/*/libs/
+**/*/dist/
