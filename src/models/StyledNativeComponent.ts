@@ -1,4 +1,3 @@
-import React, { createElement, Ref, useMemo } from 'react';
 import type {
   Attrs,
   BaseObject,
@@ -15,13 +14,13 @@ import type {
   StyledOptions,
 } from '../types';
 import determineTheme from '../utils/determineTheme';
-import { EMPTY_ARRAY, EMPTY_OBJECT } from '../utils/empties';
+import { EMPTY_ARRAY,EMPTY_OBJECT } from '../utils/empties';
 import generateDisplayName from '../utils/generateDisplayName';
 import hoist from '../utils/hoist';
 import isFunction from '../utils/isFunction';
 import isStyledComponent from '../utils/isStyledComponent';
 import merge from '../utils/mixinDeep';
-import { DefaultTheme, ThemeContext } from './ThemeProvider';
+import { DefaultTheme,ThemeContext } from './ThemeProvider';
 
 function useResolvedAttrs<Props extends object>(
   theme: DefaultTheme = EMPTY_OBJECT,

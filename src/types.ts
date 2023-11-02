@@ -22,7 +22,7 @@ type FastOmit<T extends object, U extends string | number | symbol> = {
   [K in keyof T as K extends U ? never : K]: T[K];
 };
 
-export type Runtime = 'web' | 'native';
+export type Runtime = 'web';
 
 export type AnyComponent<P extends object = any> = DefineComponent<P>;
 

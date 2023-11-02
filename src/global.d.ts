@@ -1,5 +1,5 @@
 declare module '@babel/helper-module-imports' {
-  import { NodePath, types } from '@babel/core';
+  import { NodePath,types } from '@babel/core';
 
   export function addDefault(
     program: NodePath,
@@ -26,22 +26,3 @@ declare module 'babel-plugin-styled-components' {
   };
 }
 
-declare module 'css-to-react-native' {
-  export type StyleTuple = [string, string];
-
-  export interface Style {
-    [key: string]: string | number | Style;
-  }
-
-  export function getPropertyName(name: string): string;
-  export function getStylesForProperty(
-    name: string,
-    value: string,
-    allowShorthand?: boolean
-  ): Style;
-
-  export default function transform(
-    styleTuples: StyleTuple[],
-    shorthandBlacklist?: string[] | undefined
-  ): Style;
-}

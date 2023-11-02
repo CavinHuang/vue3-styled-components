@@ -1,5 +1,5 @@
 /* Import singletons */
-import { SC_ATTR, SC_VERSION } from './constants';
+import { SC_ATTR,SC_VERSION } from './constants';
 import createGlobalStyle from './constructors/createGlobalStyle';
 import css from './constructors/css';
 import keyframes from './constructors/keyframes';
@@ -16,7 +16,7 @@ import {
   StyleSheetManager,
 } from './models/StyleSheetManager';
 /* Import components */
-import ThemeProvider, { ThemeConsumer, ThemeContext, useTheme } from './models/ThemeProvider';
+import ThemeProvider,{ ThemeConsumer,ThemeContext,useTheme } from './models/ThemeProvider';
 import isStyledComponent from './utils/isStyledComponent';
 
 /* Warning if you've imported this file on React Native */
@@ -54,7 +54,7 @@ if (
 
 /* Export everything */
 export * from './secretInternals';
-export { Attrs, DefaultTheme, ShouldForwardProp } from './types';
+export { Attrs,DefaultTheme,ShouldForwardProp } from './types';
 export {
   IStyleSheetContext,
   IStyleSheetManager,
@@ -72,5 +72,5 @@ export {
   keyframes,
   useTheme,
   SC_VERSION as version,
-  withTheme,
+  withTheme
 };
