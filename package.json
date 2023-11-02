@@ -1,17 +1,24 @@
 {
-  "name": "vue3-styled-components",
-  "version": "1.0.0",
+  "name": "v3-styled-components",
+  "version": "0.0.1",
   "description": "",
   "author": "",
   "license": "ISC",
   "keywords": [],
-  "main": "index.js",
+  "main": "dist/index.mjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
   "scripts": {
     "lint": "eslint . --ext .ts,tsx",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
     "build": "vite build",
-    "dev": "vite dev"
+    "dev": "vite dev",
+    "pub": "npm publish --access public --registry https://registry.npmjs.org/"
   },
+  "files": [
+    "./dist/**",
+    "package.json"
+  ],
   "dependencies": {
     "glamor": "^2.20.40",
     "inline-style-prefixer": "^7.0.0",
@@ -23,8 +30,11 @@
     "@cavin-huang/eslint-config": "^0.0.12",
     "@types/lodash.isplainobject": "^4.0.8",
     "@types/lodash.zipobject": "^4.1.8",
+    "@types/node": "^20.8.10",
     "@types/stylis": "^4.2.2",
     "csstype": "^3.1.2",
+    "vite": "^4.5.0",
+    "vite-plugin-dts": "^3.6.3",
     "vue": "^3.3.4"
   }
 }

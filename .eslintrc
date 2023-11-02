@@ -1,0 +1,6 @@
+{
+  "extends": ["@cavin-huang"],
+  "rules": {
+    "no-console":"off"
+  }
+}
