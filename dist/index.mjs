@@ -994,7 +994,6 @@ const _componentStyle = (nameGenerator) => {
   const inserted = {};
   class ComponentStyle2 {
     constructor(rules) {
-      console.log(1);
       this.rules = rules;
       if (!styleSheet.injected)
         styleSheet.inject();
@@ -1390,6 +1389,10 @@ function triggerEffect(effect2, debuggerEventExtraInfo) {
       effect2.run();
     }
   }
+}
+function getDepFromReactive(object, key) {
+  var _a;
+  return (_a = targetMap.get(object)) == null ? void 0 : _a.get(key);
 }
 const isNonTrackableKeys = /* @__PURE__ */ makeMap(`__proto__,__v_isRef,__isVue`);
 const builtInSymbols = new Set(
@@ -2018,6 +2021,38 @@ const shallowUnwrapHandlers = {
 function proxyRefs(objectWithRefs) {
   return isReactive(objectWithRefs) ? objectWithRefs : new Proxy(objectWithRefs, shallowUnwrapHandlers);
 }
+function toRefs(object) {
+  if (!!(process.env.NODE_ENV !== "production") && !isProxy(object)) {
+    console.warn(`toRefs() expects a reactive object but received a plain one.`);
+  }
+  const ret = isArray(object) ? new Array(object.length) : {};
+  for (const key in object) {
+    ret[key] = propertyToRef(object, key);
+  }
+  return ret;
+}
+class ObjectRefImpl {
+  constructor(_object, _key, _defaultValue) {
+    this._object = _object;
+    this._key = _key;
+    this._defaultValue = _defaultValue;
+    this.__v_isRef = true;
+  }
+  get value() {
+    const val = this._object[this._key];
+    return val === void 0 ? this._defaultValue : val;
+  }
+  set value(newVal) {
+    this._object[this._key] = newVal;
+  }
+  get dep() {
+    return getDepFromReactive(toRaw(this._object), this._key);
+  }
+}
+function propertyToRef(source, key, defaultValue) {
+  const val = source[key];
+  return isRef(val) ? val : new ObjectRefImpl(source, key, defaultValue);
+}
 const stack = [];
 function pushWarningContext(vnode) {
   stack.push(vnode);
@@ -2486,14 +2521,6 @@ function queueEffectWithSuspense(fn, suspense) {
   }
 }
 const INITIAL_WATCHER_VALUE = {};
-function watch(source, cb, options) {
-  if (!!(process.env.NODE_ENV !== "production") && !isFunction(cb)) {
-    warn(
-      `\`watch(fn, options?)\` signature has been moved to a separate API. Use \`watchEffect(fn, options?)\` instead. \`watch\` now only supports \`watch(source, cb, options?) signature.`
-    );
-  }
-  return doWatch(source, cb, options);
-}
 function doWatch(source, cb, { immediate, deep, flush, onTrack, onTrigger } = EMPTY_OBJ) {
   var _a;
   if (!!(process.env.NODE_ENV !== "production") && !cb) {
@@ -3632,6 +3659,7 @@ function normalizeProps(props = {}) {
   else
     return props;
 }
+const StyledThemeKey = Symbol("StyledThemeKey");
 const _styledComponent = (ComponentStyle2) => {
   const createStyledComponent = (tagOrComponent, rules, propDefinitions) => {
     const componentStyle = new ComponentStyle2(rules);
@@ -3649,10 +3677,10 @@ const _styledComponent = (ComponentStyle2) => {
       },
       emits: ["input", "update:modelValue"],
       setup(props, { slots, attrs, emit }) {
+        const injectTheme = inject(StyledThemeKey, ref({}));
         return () => {
-          const injectTheme = inject("theme", ref({}));
           const theme = injectTheme ? injectTheme.value : {};
-          const styleClass = componentStyle.generateAndInjectStyles({ theme, ...props, ...attrs });
+          const styleClass = componentStyle.generateAndInjectStyles({ theme, ...toRaw(props), ...toRaw(attrs) });
           const classes = [styleClass];
           if (attrs.class)
             classes.push(attrs.class);
@@ -3692,15 +3720,13 @@ const _styledComponent = (ComponentStyle2) => {
   return createStyledComponent;
 };
 const ThemeProvider = /* @__PURE__ */ defineComponent({
+  name: "StyledThemeProvider",
   props: {
     theme: Object
   },
   setup(props, { slots }) {
-    const themeObj = ref(props.theme);
-    watch(() => props.theme, (val) => {
-      themeObj.value = val;
-    }, { deep: true, immediate: true });
-    provide("theme", themeObj);
+    const { theme } = toRefs(props);
+    provide(StyledThemeKey, theme);
     return () => {
       var _a;
       return (_a = slots.default) == null ? void 0 : _a.call(slots);
@@ -3712,7 +3738,7 @@ const baseStyled = _styled(
 );
 const styled = baseStyled;
 export {
-  ThemeProvider,
+  ThemeProvider as StyledThemeProvider,
   css,
   styled as default,
   injectGlobal,

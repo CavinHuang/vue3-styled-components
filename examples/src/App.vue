@@ -1,12 +1,21 @@
 <script setup lang="ts">
+import { h } from 'vue'
+
 import styled from '../../src'
 
 import HelloWorld from './components/HelloWorld.vue'
 
-console.log(styled)
+
+function FnComp(props: {
+  a: number,
+  b: string
+}, { slots }) {
+  return h('div', slots.default(props.a))
+}
 
 const A = styled.div`
   font-size: 2.5em;
+  color: ${props => props.color};
   &:hover {
     color: #42b883;
   }
@@ -15,7 +24,12 @@ const A = styled.div`
 
 <template>
   <div>
-    <A> aaaaa </A>
+    <FnComp :a="1111" :b="222">
+      <template #default="a">
+        <div>{{a}}123</div>
+      </template>
+    </FnComp>
+    <A color="#ff0"> aaaaa </A>
     <a href="https://vitejs.dev" target="_blank">
       <img src="/vite.svg" class="logo" alt="Vite logo">
     </a>

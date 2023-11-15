@@ -12,7 +12,6 @@ export default (nameGenerator: any) => {
     rules: any
     insertedRule: any
     constructor(rules: any) {
-      console.log(1)
       this.rules = rules
 
       // stylis.set({ keyframe: false })
