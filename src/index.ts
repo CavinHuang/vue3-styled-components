@@ -1,4 +1,4 @@
-import type { DefineComponent } from 'vue'
+import type { ComponentPropsOptions, DefineComponent } from 'vue'
 import type * as CSS from 'csstype'
 
 import css from './constructors/css'
@@ -101,14 +101,53 @@ export type Substitute<A extends object, B extends object> = FastOmit<A, keyof B
 // Prevents TypeScript from inferring generic argument
 export type NoInfer<T> = [T][T extends any ? 0 : never]
 
-export interface Styled<OuterProps extends object, OuterStatics extends object = BaseObject,
-> {
+export type Attrs<Props extends object = BaseObject> =
+  | (ExecutionProps & Partial<Props>)
+  | ((props: ExecutionContext & Props) => ExecutionProps & Partial<Props>)
+
+type AttrsResult<T extends Attrs<any>> = T extends (...args: any) => infer P
+  ? P extends object
+    ? P
+    : never
+  : T extends object
+    ? T
+    : never
+
+/**
+ * Based on Attrs being a simple object or function that returns
+ * a prop object, inspect the attrs result and attempt to extract
+ * any "as" prop usage to modify the runtime target.
+ */
+type AttrsTarget<
+  T extends Attrs<any>, FallbackTarget extends 'web', Result extends ExecutionProps = AttrsResult<T>,
+> = Result extends { as: infer RuntimeTarget }
+  ? RuntimeTarget extends KnownTarget
+    ? RuntimeTarget
+    : FallbackTarget
+  : FallbackTarget
+
+export interface Styled<OuterProps extends object, OuterStatics extends object = BaseObject> {
   <Props extends object = BaseObject, Statics extends object = BaseObject>(
     initialStyles: Styles<Substitute<OuterProps, NoInfer<Props>>>,
     ...interpolations: Interpolation<Substitute<OuterProps, NoInfer<Props>>>[]
   ): DefineComponent<Substitute<OuterProps, Props>> &
   OuterStatics &
   Statics & BaseObject
+
+  attrs: <
+    Props extends object = BaseObject, PrivateMergedProps extends object = Substitute<OuterProps, Props>, PrivateAttrsArg extends Attrs<PrivateMergedProps> = Attrs<PrivateMergedProps>, PrivateResolvedTarget extends 'web' = AttrsTarget<PrivateAttrsArg, 'web'>,
+  >(
+    attrs: PrivateAttrsArg
+  ) => Styled<
+    PrivateResolvedTarget extends KnownTarget
+      ? Substitute<
+          Substitute<OuterProps, ComponentPropsOptions<PrivateResolvedTarget>>,
+          Props
+        >
+      : PrivateMergedProps,
+    OuterStatics
+  >
+
 }
 const baseStyled = _styled(
   _styledComponent(_componentStyle(generateAlphabeticName)),
@@ -119,6 +158,6 @@ type StyledStype = typeof baseStyled & {
 
 const styled = baseStyled as StyledStype
 
-export default styled
+export default styled.div
 
 export { css, injectGlobal, keyframes, ThemeProvider }
