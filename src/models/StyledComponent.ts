@@ -1,9 +1,10 @@
-import { defineComponent, h, inject, ref } from 'vue'
+import { defineComponent, h, inject, ref, toRaw } from 'vue'
 
 import css from '../constructors/css'
 import { commonHtmlAttributes as attributesToAlwaysPassOn } from '../utils/commonHtmlAttributes'
 import isVueComponent from '../utils/isVueComponent'
 import normalizeProps from '../utils/normalizeProps'
+import { StyledThemeKey } from '../context'
 
 export default (ComponentStyle: any) => {
   const createStyledComponent = (tagOrComponent: any, rules: any, propDefinitions: any) => {
@@ -31,10 +32,11 @@ export default (ComponentStyle: any) => {
       emits: ['input', 'update:modelValue'],
 
       setup(props, { slots, attrs, emit }) {
+        const injectTheme = inject(StyledThemeKey, ref({}))
         return () => {
-          const injectTheme = inject('theme', ref({}))
+          // const injectTheme = inject('theme', ref({}))
           const theme = injectTheme ? injectTheme.value : {}
-          const styleClass = componentStyle.generateAndInjectStyles({ theme, ...props, ...attrs })
+          const styleClass = componentStyle.generateAndInjectStyles({ theme, ...toRaw(props), ...toRaw(attrs) })
           const classes = [styleClass]
           if (attrs.class)
             classes.push(attrs.class)

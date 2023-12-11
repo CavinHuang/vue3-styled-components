@@ -3,7 +3,7 @@ import type * as CSS from 'csstype';
 import css from './constructors/css';
 import injectGlobal from './constructors/injectGlobal';
 import keyframes from './constructors/keyframes';
-import ThemeProvider from './providers/ThemeProvider';
+import StyledThemeProvider from './providers/ThemeProvider';
 import { type SupportedHTMLElements } from './utils/domElements';
 export type AnyComponent<P extends object = any> = DefineComponent<P>;
 export type KnownTarget = SupportedHTMLElements | AnyComponent;
@@ -71,4 +71,4 @@ type StyledStype = typeof baseStyled & {
 };
 declare const styled: StyledStype;
 export default styled;
-export { css, injectGlobal, keyframes, ThemeProvider };
+export { css, injectGlobal, keyframes, StyledThemeProvider };
